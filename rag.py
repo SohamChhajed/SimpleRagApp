@@ -6,8 +6,12 @@ COLLECTION_NAME = "sql_docs"
 
 def build_prompt(context: str, question: str) -> str:
     return f"""
-You are a helpful assistant. Answer ONLY using the context below.
-If the answer is not present in the context, say: "I do not know the answer".
+You are a helpful assistant.
+Use ONLY the context below to answer the question.
+
+Write a detailed answer.
+
+If the answer is not present in the context, say: "I do not know the answer based on the provided document."
 
 CONTEXT:
 {context}
@@ -49,5 +53,4 @@ def answer_question(question: str, k: int = 4):
     response = llm.invoke(prompt)
     sources = [(d.metadata.get("source", "unknown"), d.metadata.get("page", "?")) for d in docs]
     return response.content, sources
-if __name__ == "__main__":
-    main()
+
