@@ -6,12 +6,21 @@ COLLECTION_NAME = "sql_docs"
 
 def build_prompt(context: str, question: str) -> str:
     return f"""
-You are a helpful assistant.
-Use ONLY the context below to answer the question.
+You are a helpful AI assistant.
 
-Write a detailed answer.
+You must answer using ONLY the information provided in the context below.
+Give a detailed answer.
 
-If the answer is not present in the context, say: "I do not know the answer based on the provided document."
+If the user asks for jokes, poems, comedy, stories, creative writing, or entertainment of any kind, respond exactly with:
+"I can’t generate jokes or poems, but I can help explain concepts, provide summaries, or answer factual questions."
+
+If the question is opinion-based, hypothetical, or cannot be answered factually using the given context, respond exactly with:
+"I do not know the answer based on the provided document."
+
+If the context is empty, irrelevant, or does not contain enough information to answer the question, respond exactly with:
+"I do not know the answer based on the provided document."
+
+Keep the answer factual, concise and neutral in tone.
 
 CONTEXT:
 {context}

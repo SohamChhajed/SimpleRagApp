@@ -5,21 +5,22 @@ def main():
     st.write("Ask any questions related sql")
     question=st.text_input("Enter your question")
     if st.button("Ask") and question.strip():
-        answer,sources=answer_question(question.strip(),k=4)
+        answer,sources = answer_question(question.strip(), k=4)
+
         st.subheader("Answer")
         st.write(answer)
-        st.subheader("Sources")
-        if sources:
-            source_pages = {}
 
+        is_unknown = ("I do not know the answer" in answer) or ("No relevant context found" in answer) or ("I can’t generate jokes or poems" in answer)
+
+        if not is_unknown and sources:
+            st.subheader("Sources")
+            source_pages = {}
             for src, page in sources:
-                if src not in source_pages:
-                    source_pages[src] = set()
-                source_pages[src].add(page)
+                source_pages.setdefault(src, set()).add(page)
 
             for src, pages in source_pages.items():
-                pages_sorted = sorted(pages)
-                pages_text = ", ".join(str(p) for p in pages_sorted)
+                pages_text = ", ".join(str(p) for p in sorted(pages))
                 st.write(f"{src}: {pages_text}")
+
 if __name__=="__main__":
     main()
