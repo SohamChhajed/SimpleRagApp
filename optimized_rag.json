@@ -1,0 +1,87 @@
+{
+  "generate.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [
+      {
+        "augmented": true,
+        "context": [
+          "The inner join selects all rows from both tables as long as there is a match between the columns.",
+          "Example: SELECT * FROM Emp INNER JOIN Dept ON Emp.ID = Dept.ID;"
+        ],
+        "question": "How does an Inner Join work and what is the syntax to join an Emp and Dept table on their ID?",
+        "reasoning": "The user is asking for an explanation of how an inner join works and an example of its syntax. The context provides both: a definition of an inner join and a specific SQL example for joining 'Emp' and 'Dept' tables on 'ID'. I will extract this information directly.",
+        "answer": "An inner join selects all rows from both tables as long as there is a match between the columns. The syntax to join an Emp and Dept table on their ID is: SELECT * FROM Emp INNER JOIN Dept ON Emp.ID = Dept.ID;"
+      },
+      {
+        "augmented": true,
+        "context": [
+          "The RANK() function returns the position of any row in the specified partition.",
+          "Syntax: SELECT RANK() OVER (PARTITION BY DEPTNAME ORDER BY SALARY DESC) AS DEPT_RANK FROM workers;"
+        ],
+        "question": "Write a SQL query to rank employee salaries within their respective departments.",
+        "reasoning": "The context provides the exact syntax for using the `RANK()` function to rank salaries within departments, using `PARTITION BY DEPTNAME` and `ORDER BY SALARY DESC`. I will adapt the example provided in the context to fit the question.",
+        "answer": "SELECT RANK() OVER (PARTITION BY DEPTNAME ORDER BY SALARY DESC) AS DEPT_RANK FROM workers;"
+      },
+      {
+        "augmented": true,
+        "context": [
+          "The REPLACE() string function replaces all occurrences of a source substring with a target substring.",
+          "Input: SELECT REPLACE('WELCOME TO DATA SCIENCE', 'DATA', 'INFORMATION') returns 'WELCOME TO INFORMATION SCIENCE'."
+        ],
+        "question": "How do you change the word 'DATA' to 'INFORMATION' in a string using SQL?",
+        "reasoning": "The context explicitly describes the `REPLACE()` function and provides an example of how to use it to change 'DATA' to 'INFORMATION' in a string. I will use this information to construct the answer.",
+        "answer": "You can use the `REPLACE()` string function. For example: SELECT REPLACE('WELCOME TO DATA SCIENCE', 'DATA', 'INFORMATION');"
+      },
+      {
+        "augmented": true,
+        "context": [
+          "The COALESCE function replaces NULL values with a default value.",
+          "The first parameter is the column that may be NULL, the second is the replacement value."
+        ],
+        "question": "If a 'quantity' column has NULL values, how can I replace them with -1 in my results?",
+        "reasoning": "The user is asking how to replace NULL values in a column with a specific default value. The context explains that the `COALESCE` function is used for this purpose, taking the column as the first parameter and the replacement value as the second. I will apply this information to the 'quantity' column and the replacement value -1.",
+        "answer": "You can use the `COALESCE` function to replace NULL values. For example: `SELECT COALESCE(quantity, -1) FROM YourTable;`"
+      },
+      {
+        "augmented": true,
+        "context": [
+          "The mode is the value that appears most frequently. SQL does not have a built-in mode function.",
+          "To calculate it: SELECT TOP 1 ColumnName FROM TableName GROUP BY ColumnName ORDER BY COUNT(*) DESC."
+        ],
+        "question": "SQL doesn't have a MODE() function. How can I find the most frequent value in a column?",
+        "reasoning": "The user is asking for a method to find the most frequent value in a column, acknowledging that SQL does not have a built-in mode function. The context explicitly states that SQL does not have a built-in mode function and provides the exact SQL query to calculate it. I will use this information to construct the answer.",
+        "answer": "SQL does not have a built-in mode function. To find the most frequent value in a column, you can use the following query: SELECT TOP 1 ColumnName FROM TableName GROUP BY ColumnName ORDER BY COUNT(*) DESC."
+      }
+    ],
+    "signature": {
+      "instructions": "You are a factual assistant.\nAnswer ONLY using the provided context.\nIf the answer is not present in the context, say:\n\"I do not know the answer based on the provided document.\"\nIf the user asks for jokes, poems, comedy, stories, creative writing, or entertainment of any kind, respond exactly with:\n\"I can’t generate jokes or poems, but I can help explain concepts, provide summaries, or answer factual questions.\"\n\nIf the question is opinion-based, hypothetical, or cannot be answered factually using the given context, respond exactly with:\n\"I do not know the answer based on the provided document.\"\n\nIf the context is empty, irrelevant, or does not contain enough information to answer the question, respond exactly with:\n\"I do not know the answer based on the provided document.\"",
+      "fields": [
+        {
+          "prefix": "Context:",
+          "description": "${context}"
+        },
+        {
+          "prefix": "Question:",
+          "description": "${question}"
+        },
+        {
+          "prefix": "Reasoning: Let's think step by step in order to",
+          "description": "${reasoning}"
+        },
+        {
+          "prefix": "Answer:",
+          "description": "${answer}"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.13",
+      "dspy": "3.0.4",
+      "cloudpickle": "3.1"
+    }
+  }
+}

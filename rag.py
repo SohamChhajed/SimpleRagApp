@@ -1,6 +1,18 @@
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_postgres import PGVector
 from config import get_db_url, get_gemini_api_key
+import dspy
+import os
+from dspy_config import configure_lm
+configure_lm() 
+from dspy_rag import RAGModule
+rag_module = RAGModule()
+
+if os.path.exists("optimized_rag.json"):
+    rag_module.load("optimized_rag.json")
+    print("Loaded optimized")
+else:
+    print("optimized_rag.json not found")
 
 COLLECTION_NAME = "sql_docs"
 
@@ -57,9 +69,14 @@ def answer_question(question: str, k: int = 4):
     docs = retriever.invoke(question)
     if not docs:
         return "No relevant context found.", []
-    context = "\n\n".join([d.page_content for d in docs])
-    prompt = build_prompt(context, question)
-    response = llm.invoke(prompt)
+    context_list=[d.page_content for d in docs]
+    prediction=rag_module.forward(
+        context=context_list,
+        question=question
+    )
+    #prompt = build_prompt(context, question)
+    #response = llm.invoke(prompt)
+
     sources = [(d.metadata.get("source", "unknown"), d.metadata.get("page", "?")) for d in docs]
-    return response.content, sources
+    return prediction.answer, sources
 
