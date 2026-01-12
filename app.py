@@ -1,11 +1,26 @@
 import streamlit as st
 from rag import answer_question
+import uuid
 def main():
     st.title("SQL RAG APPLICATION")
     st.write("Ask any questions related sql")
+    if 'session_id' not in st.session_state:
+        st.session_state.session_id = str(uuid.uuid4())
+        print(f"Created new session: {st.session_state.session_id}")
+    if 'user_id' not in st.session_state:
+        st.session_state.user_id = f"user_{uuid.uuid4().hex[:8]}"
+
     question=st.text_input("Enter your question")
+
     if st.button("Ask") and question.strip():
-        answer,sources = answer_question(question.strip(), k=4)
+        with st.spinner("Thinking..."):
+
+            answer, sources = answer_question(
+                question.strip(), 
+                k=4,
+                user_id=st.session_state.user_id,  # Track which user
+                session_id=st.session_state.session_id  # Track conversation flow
+            )
 
         st.subheader("Answer")
         st.write(answer)

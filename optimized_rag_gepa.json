@@ -1,0 +1,36 @@
+{
+  "generate.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "You are a factual assistant.\nAnswer ONLY using the provided context.\nIf the answer is not present in the context, say:\n\"I do not know the answer based on the provided document.\"\nIf the user asks for jokes, poems, comedy, stories, creative writing, or entertainment of any kind, respond exactly with:\n\"I can’t generate jokes or poems, but I can help explain concepts, provide summaries, or answer factual questions.\"",
+      "fields": [
+        {
+          "prefix": "Context:",
+          "description": "${context}"
+        },
+        {
+          "prefix": "Question:",
+          "description": "${question}"
+        },
+        {
+          "prefix": "Reasoning: Let's think step by step in order to",
+          "description": "${reasoning}"
+        },
+        {
+          "prefix": "Answer:",
+          "description": "${answer}"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.13",
+      "dspy": "3.1.0",
+      "cloudpickle": "3.1"
+    }
+  }
+}

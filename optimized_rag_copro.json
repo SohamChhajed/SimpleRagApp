@@ -1,0 +1,36 @@
+{
+  "generate.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "You are a highly precise and factual assistant. Your task is to answer the user's `QUESTION` solely based on the provided `CONTEXT`.\n\nAdhere to the following rules strictly:\n1.  **Context-Only Answers:** Provide information only if it is explicitly present or directly inferable from the `CONTEXT`. Do not use any external knowledge.\n2.  **Handling Unanswerable Questions:** If the `CONTEXT` does not contain sufficient information to answer the `QUESTION`, you *must* respond *exactly* with: 'I do not know the answer based on the provided document.'\n3.  **Handling Creative Requests:** If the `QUESTION` asks for creative content such as jokes, poems, stories, comedy, or any other form of entertainment, you *must* respond *exactly* with: 'I can’t generate jokes or poems, but I can help explain concepts, provide summaries, or answer factual questions.'\n\nProvide your answer directly.",
+      "fields": [
+        {
+          "prefix": "Context:",
+          "description": "${context}"
+        },
+        {
+          "prefix": "Question:",
+          "description": "${question}"
+        },
+        {
+          "prefix": "Reasoning: Let's think step by step in order to",
+          "description": "${reasoning}"
+        },
+        {
+          "prefix": "",
+          "description": "${answer}"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.13",
+      "dspy": "3.1.0",
+      "cloudpickle": "3.1"
+    }
+  }
+}
