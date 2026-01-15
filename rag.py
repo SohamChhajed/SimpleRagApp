@@ -11,6 +11,8 @@ from langfuse_config import setup_langfuse
 from dspy_rag import RAGModule
 
 from langfuse import observe, propagate_attributes
+from feedback_store import get_today_thumbs_down
+from feedback_store import increment_thumbs_down
 
 configure_lm()
 setup_mlflow_tracing()
@@ -18,36 +20,52 @@ setup_mlflow_tracing()
 langfuse_client = setup_langfuse()
 
 rag_module = RAGModule()
+THUMBS_DOWN_THRESHOLD = 4
 
+thumbs_down_today = get_today_thumbs_down()
 
-if os.path.exists("optimized_rag_gepa.json"):
+if thumbs_down_today >= THUMBS_DOWN_THRESHOLD and os.path.exists("optimized_rag_gepa.json"):
     rag_module.load("optimized_rag_gepa.json")
     CURRENT_OPTIMIZER = "GEPA"
-    print("Loaded GEPA optimized")
-
-elif os.path.exists("optimized_rag_simba.json"):
-    rag_module.load("optimized_rag_simba.json")
-    CURRENT_OPTIMIZER = "SIMBA"
-    print("Loaded SIMBA optimized")
-
-elif os.path.exists("optimized_rag_mipro.json"):
-    rag_module.load("optimized_rag_mipro.json")
-    CURRENT_OPTIMIZER = "MIPROv2"
-    print("Loaded MIPROv2 optimized")
-
-elif os.path.exists("optimized_rag_copro.json"):
-    rag_module.load("optimized_rag_copro.json")
-    CURRENT_OPTIMIZER = "COPRO"
-    print("Loaded COPRO optimized")
-
-elif os.path.exists("optimized_rag.json"):
-    rag_module.load("optimized_rag.json")
-    CURRENT_OPTIMIZER = "Basic"
-    print("Loaded basic optimized")
-
+    print("GEPA enabled due to feedback threshold")
 else:
-    CURRENT_OPTIMIZER = "Baseline"
-    print("No optimized model found")
+    if os.path.exists("optimized_rag.json"):
+        rag_module.load("optimized_rag.json")
+        CURRENT_OPTIMIZER = "Baseline"
+        print("Using baseline RAG")
+    else:
+        CURRENT_OPTIMIZER = "Baseline"
+        print("No optimized model found")
+
+
+# if os.path.exists("optimized_rag_gepa.json"):
+#     rag_module.load("optimized_rag_gepa.json")
+#     CURRENT_OPTIMIZER = "GEPA"
+#     print("Loaded GEPA optimized")
+
+# elif os.path.exists("optimized_rag_simba.json"):
+#     rag_module.load("optimized_rag_simba.json")
+#     CURRENT_OPTIMIZER = "SIMBA"
+#     print("Loaded SIMBA optimized")
+
+# if os.path.exists("optimized_rag_mipro.json"):
+#     rag_module.load("optimized_rag_mipro.json")
+#     CURRENT_OPTIMIZER = "MIPROv2"
+#     print("Loaded MIPROv2 optimized")
+
+# elif os.path.exists("optimized_rag_copro.json"):
+#     rag_module.load("optimized_rag_copro.json")
+#     CURRENT_OPTIMIZER = "COPRO"
+#     print("Loaded COPRO optimized")
+
+# elif os.path.exists("optimized_rag.json"):
+#     rag_module.load("optimized_rag.json")
+#     CURRENT_OPTIMIZER = "Basic"
+#     print("Loaded basic optimized")
+
+# else:
+#     CURRENT_OPTIMIZER = "Baseline"
+#     print("No optimized model found")
 
 
 COLLECTION_NAME = "sql_docs"
@@ -116,6 +134,11 @@ def answer_question(
         retriever = get_rag_components(k=k)
         docs = retriever.invoke(question)
 
+        trace_id = (
+            langfuse_client.get_current_trace_id()
+            if langfuse_client else None
+        )
+
         if not docs:
             if langfuse_client:
                 langfuse_client.update_current_trace(
@@ -137,7 +160,6 @@ def answer_question(
         dspy.inspect_history(n=1)
         print("Token usage:", usage)
 
-        # -------- Langfuse Logging --------
         if langfuse_client:
             langfuse_client.update_current_trace(
                 input={
@@ -161,4 +183,18 @@ def answer_question(
             for d in docs
         ]
 
-        return prediction.answer, sources
+        return prediction.answer, sources, trace_id, context_list
+
+    
+def log_feedback(trace_id: str, score: int):
+    if not langfuse_client or not trace_id:
+        return
+
+    langfuse_client.create_score(
+        trace_id=trace_id,
+        name="user_feedback",
+        value=score,
+        comment="User feedback on answer quality"
+    )
+    if score==0:
+        increment_thumbs_down()
